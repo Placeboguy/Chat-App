@@ -13,10 +13,7 @@ const server = http.createServer(app);
 //Intialize socket.io
 export const io = new Server(server, {
     cors: {
-        origin: process.env.NODE_ENV === "production" 
-            ? ["https://your-frontend-app-name.onrender.com"] 
-            : "*",
-        credentials: true
+        origin: "*"
     }
 });
 
@@ -42,22 +39,19 @@ socket.on("disconnect", () => {
 
 
 app.use(express.json({ limit: '4mb' }));
-app.use(cors({
-    origin: process.env.NODE_ENV === "production" 
-        ? ["https://your-frontend-app-name.onrender.com"]
-        : "*",
-    credentials: true
-}));
+app.use(cors());
 
 app.use("/api/status", (req, res) => res.send("server is live"));
 app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter);
 await connectDB()
 
+if(process.env.NODE_ENV!=="production"){
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+}
 
 export default server;
